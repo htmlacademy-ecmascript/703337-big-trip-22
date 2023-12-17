@@ -18,10 +18,12 @@ const BLANK_POINT = {
 const getEditOffersTemplate = (offer, array) => {
   const{id, title, price} = offer;
   const isChecked = array.includes(id);
+  const lastWord = title.split(' ');
+  //console.log(lastWord[lastWord.length - 1]);
   return `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1"
-  type="checkbox" name="event-offer-luggage" ${isChecked ? 'checked' : ''}>
-  <label class="event__offer-label" for="event-offer-luggage-1">
+  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${lastWord[lastWord.length - 1]}-1"
+  type="checkbox" name="event-offer-${lastWord[lastWord.length - 1]}" ${isChecked ? 'checked' : ''}>
+  <label class="event__offer-label" for="event-offer-${lastWord[lastWord.length - 1]}-1">
     <span class="event__offer-title">${title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${price}</span>
@@ -71,7 +73,7 @@ const createTripEventEditTemplate = (event) => {
 
   const descriptionPoint = createDestEventEditTemplate(getDestinationObj());
   const options = mockDestinations.map((opt) => getEditOptionsTemplate(opt.name)).join('');
-  console.log(options);
+
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">

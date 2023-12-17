@@ -1,7 +1,7 @@
 //import { type } from 'os';
 import { DESTINATIONS, NUMBERS_ID } from '../const';
-import { getRandomArrayElement, generateRandomArrayElement } from '../utils';
-import { mockOffers } from './offerM';
+import { generateRandomArrayElement } from '../utils';
+
 const getRandomElement = generateRandomArrayElement(DESTINATIONS);
 
 const getRandomId = generateRandomArrayElement(NUMBERS_ID);
@@ -19,13 +19,13 @@ const mockPoints = [
   },
   {
     id: `${getRandomId()}`,
-    type: 'drive',
+    type: 'flight',
     basePrice: Math.floor(Math.random() * 200),
     dateFrom: new Date('2023-05-01'),
     dateTo: new Date('2023-05-25'),
     destination: getRandomElement(),
     isFavorite: true,
-    offers: ['b4c3e4e6-9053-42ce-b747-e281314baa61', 'b4c3e4e6-9053-42ce-b747-e281314baa62'],
+    offers: ['b4c3e4e6-9053-42ce-b747-e281314baa71', 'b4c3e4e6-9053-42ce-b747-e281314baa72'],
   },
   {
     id: `${getRandomId()}`,

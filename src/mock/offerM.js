@@ -1,7 +1,3 @@
-import { NUMBERS_ID } from '../const';
-import { generateRandomArrayElement } from '../utils';
-const getRandomIdOffer = generateRandomArrayElement(NUMBERS_ID);
-
 const mockOffers = [
   {
     type: 'taxi',
@@ -90,6 +86,21 @@ const mockOffers = [
         title: 'Switch to comfort',
         price: 80
       },
+      {
+        id: 'b4c3e4e6-9053-42ce-b747-e281314baa73',
+        title: 'Add meal',
+        price: 15
+      },
+      {
+        id: 'b4c3e4e6-9053-42ce-b747-e281314baa74',
+        title: 'Choose seats',
+        price: 5
+      },
+      {
+        id: 'b4c3e4e6-9053-42ce-b747-e281314baa75',
+        title: 'Travel by train',
+        price: 40
+      }
     ]
   },
   {
