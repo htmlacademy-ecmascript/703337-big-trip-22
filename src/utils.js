@@ -7,7 +7,7 @@ function getRandomArrayElement(items) {
 }
 
 const generateRandomArrayElement = (arr) => {
-  let array = [...arr];
+  const array = [...arr];
   return function (){
     const randomElement = getRandomArrayElement(array);
     const index = array.indexOf(randomElement);

@@ -1,6 +1,5 @@
-//import { type } from 'os';
 import { DESTINATIONS, NUMBERS_ID } from '../const';
-import { generateRandomArrayElement } from '../utils';
+import { generateRandomArrayElement } from '../utils/common.js';
 
 const getRandomElement = generateRandomArrayElement(DESTINATIONS);
 
