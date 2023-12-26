@@ -2,7 +2,7 @@ import SortView from '../view/sort-view.js';
 import TripEventListView from '../view/trip-events-list-view.js';
 import WaypointView from '../view/waypoint-view.js';
 import TripEventEditView from '../view/editing-form-view.js';
-import {render, replace, remove} from '../framework/render.js';
+import {render, replace} from '../framework/render.js';
 import NoPointView from '../view/no-point-view.js';
 
 export default class BoardPresenter {
