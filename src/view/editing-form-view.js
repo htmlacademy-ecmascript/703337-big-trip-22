@@ -1,7 +1,7 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { TYPE_EVENTS } from '../const.js';
 import { mockOffers } from '../mock/offerM.js';
-import { humanizeEventEditDate } from '../utils.js';
+import { humanizeEventEditDate } from '../utils/point.js';
 import { mockDestinations } from '../mock/destinationM.js';
 
 const BLANK_POINT = {
@@ -57,15 +57,16 @@ const createTripEventEditTemplate = (event) => {
   const dateF = humanizeEventEditDate(dateFrom);
   const dateT = humanizeEventEditDate(dateTo);
   const typeOffers = mockOffers.find((offer) => offer.type === type).offers;
-  //console.log(typeOffers);
-  //const pointOffers = typeOffers.filter((off) => offers.includes(off.id));
   const offersAll = createOffersEventEditTemplate(typeOffers, arrOffers);
 
   const getDestinationObj = () => {
-    let destObject;
-    for (let i = 0; i < mockDestinations.length; i++){
-      if(mockDestinations[i].name === destination){
-        destObject = {...mockDestinations[i]};
+    let destObject = {};
+    if(destination){
+      for (let i = 0; i < mockDestinations.length; i++){
+        if(mockDestinations[i].name === destination){
+          destObject = structuredClone(mockDestinations[i]);
+          break;
+        }
       }
     }
     return destObject;
@@ -183,24 +184,27 @@ const createTripEventEditTemplate = (event) => {
 </li>`);
 };
 
-export default class TripEventEditView {
-  constructor({event = BLANK_POINT}) {
-    this.event = event;
+export default class TripEventEditView extends AbstractView {
+  #point = null;
+  #handleFormSubmit = null;
+  #handleFormClose = null;
+
+  constructor({point = BLANK_POINT, onFormSubmit}) {
+    super();
+    this.#point = point;
+    this.#handleFormSubmit = onFormSubmit;
+    //this.#handleFormClose = onFormClose;
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createTripEventEditTemplate(this.event);
+  get template() {
+    return createTripEventEditTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
