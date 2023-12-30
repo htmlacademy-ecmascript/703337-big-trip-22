@@ -193,7 +193,7 @@ export default class TripEventEditView extends AbstractView {
     super();
     this.#point = point;
     this.#handleFormSubmit = onFormSubmit;
-    //this.#handleFormClose = onFormClose;
+
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
@@ -205,6 +205,6 @@ export default class TripEventEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#point);
   };
 }
