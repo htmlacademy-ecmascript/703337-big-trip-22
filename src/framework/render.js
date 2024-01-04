@@ -58,6 +58,9 @@ function replace(newComponent, oldComponent) {
     throw new Error('Parent element doesn\'t exist');
   }
   //alert('переставляю метод replace')
+  // console.log(newElement)
+  // console.log(parent)
+  // console.log(oldElement)
   parent.replaceChild(newElement, oldElement);
 }
 

@@ -75,14 +75,11 @@ export default class PointPresenter {
   }
 
   #replaceCardToForm () {
-    console.log(document.querySelector('.trip-events__list').children);
-    //alert('begin replaceCardToForm')
-    //alert('Mode.edit - это метод replaceCardToForm')
-    this.#mode = Mode.EDITING;
 
     this.#handleModeChange();
-
     replace(this.#pointEditComponent, this.#pointComponent);
+
+    this.#mode = Mode.EDITING;
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
     //alert('конец метода replaceCardToForm')
