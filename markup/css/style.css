@@ -710,7 +710,7 @@ main {
   .event__favorite-btn:focus {
     color: rgba(255, 208, 84, 0.6); }
   .event__favorite-btn--active {
-    color: #ffd054;
+    color: #54bbff;
   }
 
 .event__favorite-icon {

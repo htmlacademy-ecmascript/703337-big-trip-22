@@ -12,4 +12,8 @@ const generateRandomArrayElement = (arr) => {
   };
 };
 
-export {generateRandomArrayElement,getRandomArrayElement};
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export {generateRandomArrayElement,getRandomArrayElement, updateItem};

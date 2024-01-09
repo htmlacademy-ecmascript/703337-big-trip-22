@@ -1,7 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDueDate } from '../utils/point.js';
+import { humanizeEventDueDate, duration } from '../utils/point.js';
 import { mockOffers } from '../mock/offerM.js';
 import dayjs from 'dayjs';
+
 
 function getOffersTemplate (event){
   const {title, price} = event;
@@ -31,8 +32,16 @@ function createEventOffersTemplate (offers) {
 }
 
 function createWaypointTemplate(event) {
-  const {type, dateFrom, destination, basePrice, isFavorite, offers: arrOffers} = event;
+  const {type, dateFrom, dateTo, destination, basePrice, isFavorite, offers: arrOffers} = event;
   const date = humanizeEventDueDate(dateFrom);
+  const durationTime = () => {
+    const separatedTime = duration(dateFrom, dateTo);
+    const {days, hours, minutes} = separatedTime;
+    return `${days}D ${hours}H ${minutes}M`;
+  };
+  const timeFrom = dayjs(dateFrom).format('HH:mm');
+  const timeTo = dayjs(dateTo).format('HH:mm');
+
   const typeOffers = mockOffers.find((offer) => offer.type === type).offers;
 
   const pointOffers = typeOffers.filter((off) => arrOffers.includes(off.id));
@@ -48,11 +57,11 @@ function createWaypointTemplate(event) {
     <h3 class="event__title">${type} ${destination}</h3>
     <div class="event__schedule">
       <p class="event__time">
-        <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+        <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+        <time class="event__end-time" datetime="2019-03-18T11:00">${timeTo}</time>
       </p>
-      <p class="event__duration">30M</p>
+      <p class="event__duration">${durationTime()}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
@@ -75,13 +84,18 @@ function createWaypointTemplate(event) {
 export default class WaypointView extends AbstractView {
   #point = null;
   #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor({point, onEditClick}) {
+  constructor({point, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
     this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
   get template() {
@@ -91,6 +105,11 @@ export default class WaypointView extends AbstractView {
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
   };
 
 }

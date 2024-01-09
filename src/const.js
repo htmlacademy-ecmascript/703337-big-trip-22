@@ -10,4 +10,10 @@ const TYPE_EVENTS = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight',
 
 const DESTINATIONS = ['Moscow', 'Krasnodar', 'Tomsk', 'Norilsk', 'Krasnoyarsk', 'Perm', 'Voronej'];
 
-export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID};
+const SortType = {
+  DEFAULT: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
+export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID, SortType};
