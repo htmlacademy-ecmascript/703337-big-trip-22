@@ -1,6 +1,7 @@
 import WaypointView from '../view/waypoint-view.js';
 import TripEventEditView from '../view/editing-form-view.js';
 import {render, replace, remove} from '../framework/render.js';
+import DestinationView from '../view/destination-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -47,14 +48,15 @@ export default class PointPresenter {
       return;
     }
     if (this.#pointListContainer.contains(prevPointComponent.element)) {
-      alert('меняю местами точку и пред')
+      //alert('меняю местами точку и предыдущую точку')
       replace(this.#pointComponent, prevPointComponent);
     }
 
     if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
-      alert('меняю местами форму и пред')
+      //alert('меняю местами форму и предыдущую форму')
       this.#mode = Mode.EDITING;
       replace(this.#pointEditComponent, prevPointEditComponent);
+      this.#pointEditComponent.init();
     }
 
     remove(prevPointComponent);
@@ -78,7 +80,7 @@ export default class PointPresenter {
 
     this.#handleModeChange();
     replace(this.#pointEditComponent, this.#pointComponent);
-
+    this.#pointEditComponent.init();
     this.#mode = Mode.EDITING;
 
     document.addEventListener('keydown', this.#escKeyDownHandler);

@@ -1,10 +1,8 @@
-import { DESTINATIONS, NUMBERS_ID } from '../const';
+import { DESTINATIONS} from '../const';
 import { generateRandomArrayElement } from '../utils/common.js';
 import {nanoid} from 'nanoid';
 
 const getRandomElement = generateRandomArrayElement(DESTINATIONS);
-
-//const getRandomId = generateRandomArrayElement(NUMBERS_ID);
 
 const mockPoints = [
   {
@@ -50,12 +48,12 @@ const mockPoints = [
 ];
 
 const getPoint = generateRandomArrayElement(mockPoints);
+
 function getRandomPoint() {
   return {
     id: nanoid(),
     ...getPoint()
   };
-
 }
 
 export {getRandomPoint};
