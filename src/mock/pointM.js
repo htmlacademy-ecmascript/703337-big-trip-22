@@ -1,5 +1,5 @@
 import { DESTINATIONS} from '../const';
-import { generateRandomArrayElement } from '../utils/common.js';
+import { generateRandomArrayElement} from '../utils/common.js';
 import {nanoid} from 'nanoid';
 
 const getRandomElement = generateRandomArrayElement(DESTINATIONS);

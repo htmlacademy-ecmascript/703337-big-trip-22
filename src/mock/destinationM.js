@@ -82,4 +82,17 @@ const mockDestinations = [
   },
 ];
 
-export{mockDestinations};
+const getDestination = (arrPoint) => {
+  const destArray = [];
+  for (let i = 0; i < arrPoint.length; i++){
+    for(let j = 0; j < mockDestinations.length; j++){
+      if(arrPoint[i] === mockDestinations[j].name){
+        destArray[i] = structuredClone(mockDestinations[j]);
+      }
+    }
+  }
+  return destArray;
+};
+
+
+export{mockDestinations, getDestination};

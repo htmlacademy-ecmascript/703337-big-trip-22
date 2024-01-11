@@ -16,4 +16,16 @@ const SortType = {
   PRICE: 'price',
 };
 
-export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID, SortType};
+const EventType = {
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECKIN: 'check-in',
+  SIGHTSEEING:'sightseeing',
+  RESTAURANT: 'restaurant',
+};
+
+export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID, SortType, EventType};

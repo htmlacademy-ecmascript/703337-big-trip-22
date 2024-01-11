@@ -34,7 +34,8 @@ function sortTypePrice(a, b) {
 
 function sortTypeTime(a, b){
   const durationA = dayjs(a.dateTo).diff(dayjs(a.dateFrom));
-  const durationB = dayjs(b.dateTo).diff(dayjs(b.dateFrom));console.log(durationA - durationB)
+  const durationB = dayjs(b.dateTo).diff(dayjs(b.dateFrom));
+  //console.log(durationA - durationB)
   return durationB - durationA;
 }
 

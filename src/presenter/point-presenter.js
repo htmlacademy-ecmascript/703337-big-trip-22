@@ -1,7 +1,6 @@
 import WaypointView from '../view/waypoint-view.js';
 import TripEventEditView from '../view/editing-form-view.js';
 import {render, replace, remove} from '../framework/render.js';
-import DestinationView from '../view/destination-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -14,6 +13,8 @@ export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
   #point = null;
+  #destinations = null;
+  #offers = null;
   #handleModeChange = null;
   #mode = Mode.DEFAULT;
 
@@ -27,8 +28,10 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   };
 
-  init(point) {
+  init(point, destinations, offers) {
     this.#point = point;
+    this.#destinations = destinations;
+    this.#offers = offers;
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
@@ -40,7 +43,10 @@ export default class PointPresenter {
 
     this.#pointEditComponent = new TripEventEditView({
       point: this.#point,
-      onFormSubmit: this.#handleFormSubmit
+      destinations: this.#destinations,
+      offers: this.#offers,
+      onFormSubmit: this.#handleFormSubmit,
+      onFormClose: this.#handleFormClose,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -48,15 +54,15 @@ export default class PointPresenter {
       return;
     }
     if (this.#pointListContainer.contains(prevPointComponent.element)) {
-      //alert('меняю местами точку и предыдущую точку')
+      //alert('меняю местами новую точку и предыдущую точку');
       replace(this.#pointComponent, prevPointComponent);
     }
 
     if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
-      //alert('меняю местами форму и предыдущую форму')
+      //alert('меняю местами новую форму и предыдущую форму');
       this.#mode = Mode.EDITING;
       replace(this.#pointEditComponent, prevPointEditComponent);
-      this.#pointEditComponent.init();
+
     }
 
     remove(prevPointComponent);
@@ -73,18 +79,14 @@ export default class PointPresenter {
     //alert(' метод resetView заменяю форму на карту')
       this.#replaceFormToCard();
     }
-    //alert('конец метода resetView')
   }
 
   #replaceCardToForm () {
-
     this.#handleModeChange();
     replace(this.#pointEditComponent, this.#pointComponent);
-    this.#pointEditComponent.init();
-    this.#mode = Mode.EDITING;
 
+    this.#mode = Mode.EDITING;
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    //alert('конец метода replaceCardToForm')
 
   }
 
@@ -108,7 +110,10 @@ export default class PointPresenter {
 
   #handleFormSubmit = (point) => {
     this.#handleDataChange(point);
-    alert('formSubmit')
+    this.#replaceFormToCard();
+  };
+
+  #handleFormClose = () => {
     this.#replaceFormToCard();
   };
 }
