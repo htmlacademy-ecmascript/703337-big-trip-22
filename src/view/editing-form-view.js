@@ -80,6 +80,18 @@ const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
   const description = createDestEventEditTemplate(destinationObj);
   const options = destinationsArray.map((opt) => getEditOptionsTemplate(opt.name)).join('');
 
+  // const getDestinationObj = () => {
+  //   let destObject = {};
+  //   if(destination){
+  //     for (let i = 0; i < mockDestinations.length; i++){
+  //       if(mockDestinations[i].name === destination){
+  //         destObject = structuredClone(mockDestinations[i]);
+  //         break;
+  //       }
+  //     }
+  //   }
+  //   return destObject;
+  // };
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -198,14 +210,17 @@ export default class TripEventEditView extends AbstractStatefulView {
   #handleFormClose = null;
   #destComponent = null;
 
+
   constructor({point = BLANK_POINT, destinations, offers, onFormSubmit, onFormClose}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
+
     this._setState(TripEventEditView.parsePointToState(point));//объект состояния
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormClose = onFormClose;
+
 
     this._restoreHandlers();
   }
@@ -218,9 +233,11 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
     this.element.querySelector('.event__type-list').addEventListener('click', this.#formTypeHandler);
+
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestinationInputHandler);
     this.element.querySelector('.event__field-group--time').addEventListener('click', this.#setDatepicker);
+
   }
 
   static parsePointToState(point) {
@@ -268,7 +285,7 @@ export default class TripEventEditView extends AbstractStatefulView {
         },
       );
     }
-  };
+  }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();

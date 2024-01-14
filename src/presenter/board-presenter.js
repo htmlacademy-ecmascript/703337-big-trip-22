@@ -100,7 +100,7 @@ export default class BoardPresenter {
     this.#clearPointList();
     this.#renderTripList();
     for (let i = 0; i < this.#boardPoints.length; i++) {
-      this.#renderPoint(this.#boardPoints[i]);
+      this.#renderPoint(this.#boardPoints[i], this.#boardDestinations, this.#boardOffers);
     }
   };
 

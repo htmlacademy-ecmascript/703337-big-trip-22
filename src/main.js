@@ -12,6 +12,7 @@ const EVENT_COUNT = 3;
 const siteHeaderElement = document.querySelector('.trip-controls__filters');
 const siteMainElement = document.querySelector('.trip-events');
 const pointsModel = new PointsModel(Array.from({length: EVENT_COUNT}, getRandomPoint));
+
 const destinationsModel = new DestinationsModel(mockDestinations);
 const offersModel = new OffersModel(mockOffers);
 const boardPresenter = new BoardPresenter({boardContainer: siteMainElement, pointsModel,
