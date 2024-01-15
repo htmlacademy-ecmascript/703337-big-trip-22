@@ -1,4 +1,4 @@
-import { generateRandomArrayElement } from '../utils';
+import { generateRandomArrayElement } from '../utils/common';
 import { NUMBERS_ID } from '../const';
 const getRandomIdDest = generateRandomArrayElement(NUMBERS_ID);
 
@@ -9,7 +9,7 @@ const mockDestinations = [
     name: 'Moscow',
     pictures: [
       {
-        src: `http://picsum.photos/300/200?r=${Math.random()}`,
+        src: 'img/photos/1.jpg',
         description: ' parliament building'
       }
     ]
@@ -20,8 +20,8 @@ const mockDestinations = [
     name: 'Krasnodar',
     pictures: [
       {
-        src: `http://picsum.photos/300/200?r=${Math.random()}`,
-        description: '{} parliament building'
+        src: 'img/photos/2.jpg',
+        description: ' parliament building'
       }
     ]
   },
@@ -31,8 +31,8 @@ const mockDestinations = [
     name: 'Tomsk',
     pictures: [
       {
-        src: `http://picsum.photos/300/200?r=${Math.random()}`,
-        description: '$ parliament building'
+        src: 'img/photos/3.jpg',
+        description: ' parliament building'
       }
     ]
   },
@@ -42,7 +42,7 @@ const mockDestinations = [
     name: 'Norilsk',
     pictures: [
       {
-        src: `http://picsum.photos/300/200?r=${Math.random()}`,
+        src: 'img/photos/4.jpg',
         description: 'parliament building'
       }
     ]
@@ -53,7 +53,7 @@ const mockDestinations = [
     name: 'Krasnoyarsk',
     pictures: [
       {
-        src: `http://picsum.photos/300/200?r=${Math.random()}`,
+        src: 'img/photos/5.jpg',
         description: '$ame} parliament building'
       }
     ]
@@ -82,4 +82,17 @@ const mockDestinations = [
   },
 ];
 
-export{mockDestinations};
+const getDestination = (arrPoint) => {
+  const destArray = [];
+  for (let i = 0; i < arrPoint.length; i++){
+    for(let j = 0; j < mockDestinations.length; j++){
+      if(arrPoint[i] === mockDestinations[j].name){
+        destArray[i] = structuredClone(mockDestinations[j]);
+      }
+    }
+  }
+  return destArray;
+};
+
+
+export{mockDestinations, getDestination};

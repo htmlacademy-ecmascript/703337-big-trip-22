@@ -28,6 +28,7 @@ function createElement(template) {
  */
 function render(component, container, place = RenderPosition.BEFOREEND) {
   if (!(component instanceof AbstractView)) {
+    //console.log(component instanceof AbstractView);
     throw new Error('Can render only components');
   }
 
@@ -56,7 +57,10 @@ function replace(newComponent, oldComponent) {
   if (parent === null) {
     throw new Error('Parent element doesn\'t exist');
   }
-
+  //alert('переставляю метод replace')
+  // console.log(newElement)
+  // console.log(parent)
+  // console.log(oldElement)
   parent.replaceChild(newElement, oldElement);
 }
 
@@ -65,6 +69,7 @@ function replace(newComponent, oldComponent) {
  * @param {AbstractView} component Компонент, который нужно удалить
  */
 function remove(component) {
+
   if (component === null) {
     return;
   }
@@ -75,6 +80,7 @@ function remove(component) {
 
   component.element.remove();
   component.removeElement();
+
 }
 
 export {RenderPosition, createElement, render, replace, remove};

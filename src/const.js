@@ -10,4 +10,22 @@ const TYPE_EVENTS = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight',
 
 const DESTINATIONS = ['Moscow', 'Krasnodar', 'Tomsk', 'Norilsk', 'Krasnoyarsk', 'Perm', 'Voronej'];
 
-export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID};
+const SortType = {
+  DEFAULT: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
+const EventType = {
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECKIN: 'check-in',
+  SIGHTSEEING:'sightseeing',
+  RESTAURANT: 'restaurant',
+};
+
+export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID, SortType, EventType};
