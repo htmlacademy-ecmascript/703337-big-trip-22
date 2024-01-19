@@ -1,6 +1,9 @@
 import WaypointView from '../view/waypoint-view.js';
 import TripEventEditView from '../view/editing-form-view.js';
 import {render, replace, remove} from '../framework/render.js';
+import { UpdateType, UserAction } from '../const.js';
+import { isDatesFuture, isDatesPast, isDatesPresent } from '../utils/point.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -47,6 +50,7 @@ export default class PointPresenter {
       offers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
       onFormClose: this.#handleFormClose,
+      onDeleteClick: this.#handleDeleteClick
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -103,15 +107,30 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+    const isMinorUpdate = isDatesFuture(point) || isDatesPast(point) || isDatesPresent(point);
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      point);
     this.#replaceFormToCard();
   };
 
   #handleFormClose = () => {
     this.#replaceFormToCard();
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

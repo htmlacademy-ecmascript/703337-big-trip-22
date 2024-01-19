@@ -10,6 +10,13 @@ const TYPE_EVENTS = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight',
 
 const DESTINATIONS = ['Moscow', 'Krasnodar', 'Tomsk', 'Norilsk', 'Krasnoyarsk', 'Perm', 'Voronej'];
 
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past',
+};
+
 const SortType = {
   DEFAULT: 'day',
   TIME: 'time',
@@ -28,4 +35,16 @@ const EventType = {
   RESTAURANT: 'restaurant',
 };
 
-export {TYPE_EVENTS, DESTINATIONS, NUMBERS_ID, SortType, EventType};
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+export {TYPE_EVENTS, FilterType, DESTINATIONS, NUMBERS_ID, SortType, EventType, UserAction, UpdateType};

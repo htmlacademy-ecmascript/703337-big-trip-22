@@ -1,9 +1,8 @@
 //import AbstractView from '../framework/view/abstract-view.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EventType } from '../const.js';
-import { mockOffers } from '../mock/offerM.js';
+import he from 'he';
 import { humanizeEventEditDate } from '../utils/point.js';
-import { mockDestinations } from '../mock/destinationM.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 //import{French}
@@ -50,15 +49,18 @@ const getEditOptionsTemplate = (dest) => `<option value="${dest}"></option>`;
 
 const getPhotoTemplate = (array) => {
   const arrayPhoto = [];
-  for (let i = 0; i < array.length; i ++){
-    arrayPhoto[i] = `<img class="event__photo" src="${array[i].src}" alt="Event photo">`;
+  if(array){
+    for (let i = 0; i < array.length; i ++){
+      arrayPhoto[i] = `<img class="event__photo" src="${array[i].src}" alt="Event photo">`;
+    }
+    return arrayPhoto.join('');
   }
-  return arrayPhoto.join('');
 };
 
 const createDestEventEditTemplate = (destination) => {
-  const{description, pictures} = destination;
-  return `<section class="event__section  event__section--destination">
+  if(destination){
+    const{description, pictures} = destination;
+    return `<section class="event__section  event__section--destination">
   <h3 class="event__section-title  event__section-title--destination">Destination</h3>
   <p class="event__destination-description">${description}</p>
   <div class="event__photos-container">
@@ -67,31 +69,23 @@ const createDestEventEditTemplate = (destination) => {
     </div>
   </div>
 </section>`;
+  } else {
+    return '';
+  }
+
 };
 
 const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
   const {type, dateFrom, dateTo, basePrice, destination, offers: arrOffers} = event;
   const dateF = humanizeEventEditDate(dateFrom);
   const dateT = humanizeEventEditDate(dateTo);
-  const typeOffers = mockOffers.find((offer) => offer.type === type).offers;
+  const typeOffers = offersArray.find((offer) => offer.type === type).offers;
   const offersAll = createOffersEventEditTemplate(typeOffers, arrOffers);
 
   const destinationObj = destinationsArray.find((item) => destination === item.name);
   const description = createDestEventEditTemplate(destinationObj);
   const options = destinationsArray.map((opt) => getEditOptionsTemplate(opt.name)).join('');
 
-  // const getDestinationObj = () => {
-  //   let destObject = {};
-  //   if(destination){
-  //     for (let i = 0; i < mockDestinations.length; i++){
-  //       if(mockDestinations[i].name === destination){
-  //         destObject = structuredClone(mockDestinations[i]);
-  //         break;
-  //       }
-  //     }
-  //   }
-  //   return destObject;
-  // };
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -208,10 +202,10 @@ export default class TripEventEditView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #datepicker = null;
   #handleFormClose = null;
-  #destComponent = null;
+  #handleDeleteClick = null;
 
 
-  constructor({point = BLANK_POINT, destinations, offers, onFormSubmit, onFormClose}) {
+  constructor({point = BLANK_POINT, destinations, offers, onFormSubmit, onFormClose, onDeleteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
@@ -220,7 +214,7 @@ export default class TripEventEditView extends AbstractStatefulView {
     this._setState(TripEventEditView.parsePointToState(point));//объект состояния
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormClose = onFormClose;
-
+    this.#handleDeleteClick = onDeleteClick;
 
     this._restoreHandlers();
   }
@@ -237,7 +231,9 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestinationInputHandler);
     this.element.querySelector('.event__field-group--time').addEventListener('click', this.#setDatepicker);
-
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#formPriceInputHandler);
   }
 
   static parsePointToState(point) {
@@ -285,7 +281,7 @@ export default class TripEventEditView extends AbstractStatefulView {
         },
       );
     }
-  }
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
@@ -325,6 +321,18 @@ export default class TripEventEditView extends AbstractStatefulView {
   #dateToChangeHandler = ([userDate]) => {
     this.updateElement({
       dateTo: userDate,
+    });
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(TripEventEditView.parseStateToPoint(this._state));
+  };
+
+  #formPriceInputHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: evt.target.value.replace(/[^0-9]/g, ''),
     });
   };
 }
