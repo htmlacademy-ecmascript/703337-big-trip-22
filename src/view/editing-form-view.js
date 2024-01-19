@@ -1,4 +1,3 @@
-/
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EventType } from '../const.js';
 //import he from 'he';
