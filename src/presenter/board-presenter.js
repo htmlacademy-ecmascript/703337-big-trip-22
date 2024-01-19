@@ -132,8 +132,8 @@ export default class BoardPresenter {
       case UserAction.DELETE_POINT:
         this.#pointsModel.deletePoint(updateType, update);
         break;
-    };
-  }
+    }
+  };
 
   #handleModelEvent = (updateType, data, destinations, offers) => {
     //console.log(updateType, data);

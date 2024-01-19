@@ -1,11 +1,11 @@
-//import AbstractView from '../framework/view/abstract-view.js';
+/
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EventType } from '../const.js';
-import he from 'he';
+//import he from 'he';
 import { humanizeEventEditDate } from '../utils/point.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-//import{French}
+
 
 const BLANK_POINT = {
   id: '',
