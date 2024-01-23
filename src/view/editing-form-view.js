@@ -199,7 +199,8 @@ export default class TripEventEditView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
-  #datepicker = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
   #handleFormClose = null;
   #handleDeleteClick = null;
 
@@ -229,10 +230,11 @@ export default class TripEventEditView extends AbstractStatefulView {
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestinationInputHandler);
-    this.element.querySelector('.event__field-group--time').addEventListener('click', this.#setDatepicker);
+    //this.element.querySelector('.event__field-group--time').addEventListener('click', this.#setDatepicker);
+    this.#setDatepicker();
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#formDeleteClickHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#formPriceInputHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#formPriceInputHandler);
   }
 
   static parsePointToState(point) {
@@ -247,39 +249,35 @@ export default class TripEventEditView extends AbstractStatefulView {
   removeElement() {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#datepickerFrom && this.#datepickerTo) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerTo.destroy();
+      this.#datepickerFrom = null;
+      this.#datepickerTo = null;
     }
   }
 
-  #setDatepicker = (evt) => {
-    //const eventInputList = this.element.querySelector('.event__field-group--time').getElementsByTagName('input');
-    if(evt.target.id === 'event-start-time-1'){
-      this.#datepicker = flatpickr(
-        evt.target,
-        {
-          enableTime: true,
-          altInput: true,
-          dateFormat: 'd/m/Y H:i',
-          weekNumbers: true,
-          defaultDate: this._state.dateFrom,
-          onChange: this.#dateFromChangeHandler,
-        },
-      );
-    } else {
-      this.#datepicker = flatpickr(
-        evt.target,
-        {
-          enableTime: true,
-          altInput: true,
-          dateFormat: 'd/m/Y H:i',
-          weekNumbers: true,
-          defaultDate: this._state.dateTo,
-          onChange: this.#dateToChangeHandler,
-        },
-      );
-    }
+  #setDatepicker = () => {
+    this.#datepickerFrom = flatpickr(this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/Y H:i',
+        weekNumbers: true,
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      },
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/Y H:i',
+        weekNumbers: true,
+        minDate: this._state.dateFrom,
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler,
+      },
+    );
   };
 
   #formSubmitHandler = (evt) => {
@@ -330,6 +328,7 @@ export default class TripEventEditView extends AbstractStatefulView {
 
   #formPriceInputHandler = (evt) => {
     evt.preventDefault();
+    //evt.target.blur();
     this.updateElement({
       basePrice: evt.target.value.replace(/[^0-9]/g, ''),
     });
