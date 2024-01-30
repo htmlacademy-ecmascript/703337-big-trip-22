@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
 const DATE_FORMAT = 'MMM D';
 const DATE_EDIT_FORMAT = 'DD/MM/YY HH:mm';
 
@@ -27,16 +28,36 @@ function duration(dateFrom, dateTo){
   };
 }
 
-function sortTypePrice(a, b) {
+const sortTypePrice = (a, b) => b.basePrice - a.basePrice;
 
-  return b.basePrice - a.basePrice;
-}
 
-function sortTypeTime(a, b){
+const sortTypeTime = (a, b) => {
   const durationA = dayjs(a.dateTo).diff(dayjs(a.dateFrom));
   const durationB = dayjs(b.dateTo).diff(dayjs(b.dateFrom));
-  //console.log(durationA - durationB)
   return durationB - durationA;
-}
+};
 
-export {humanizeEventDueDate, humanizeEventEditDate, sortTypeTime, duration, sortTypePrice};
+const isDatesFuture = (point) => {
+  const now = dayjs();
+  const dateStart = dayjs(point.dateFrom);
+  return dateStart.isAfter(now);
+};
+
+const isDatesPast = (point) => {
+  const now = dayjs();
+  const dateEnd = dayjs(point.dateTo);
+  return dateEnd.isBefore(now);
+};
+
+const isDatesPresent = (point) => {
+  const now = dayjs();
+  const dateStart = dayjs(point.dateFrom);
+  const dateEnd = dayjs(point.dateTo);
+  if((dateStart.isBefore(now) || dateStart.isSame(now)) && (dateEnd.isAfter(now)
+  || dateEnd.isSame(now))){
+    return true;
+  }
+};
+
+export {humanizeEventDueDate, humanizeEventEditDate, sortTypeTime, duration, sortTypePrice, isDatesFuture,
+  isDatesPast, isDatesPresent};
