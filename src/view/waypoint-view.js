@@ -31,8 +31,11 @@ function createEventOffersTemplate (offers) {
     </ul>`);
 }
 
-function createWaypointTemplate(event) {
+function createWaypointTemplate(event, destinations) {
+  //console.log(destinations)
   const {type, dateFrom, dateTo, destination, basePrice, isFavorite, offers: arrOffers} = event;
+  const destinationName = destinations.find((item) => destination === item.id).name;
+  //console.log(destinationName)
   const date = humanizeEventDueDate(dateFrom);
   const durationTime = () => {
     const separatedTime = duration(dateFrom, dateTo);
@@ -54,7 +57,7 @@ function createWaypointTemplate(event) {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${destination}</h3>
+    <h3 class="event__title">${type} ${destinationName}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
@@ -83,12 +86,14 @@ function createWaypointTemplate(event) {
 
 export default class WaypointView extends AbstractView {
   #point = null;
+  #destinations;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({point, onEditClick, onFavoriteClick}) {
+  constructor({point, destinations, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
+    this.#destinations = destinations;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -99,7 +104,7 @@ export default class WaypointView extends AbstractView {
   }
 
   get template() {
-    return createWaypointTemplate(this.#point);
+    return createWaypointTemplate(this.#point, this.#destinations);
   }
 
   #editClickHandler = (evt) => {

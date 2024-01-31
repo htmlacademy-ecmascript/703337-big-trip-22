@@ -27,13 +27,14 @@ export default class ApiService {
     headers = new Headers(),
   }) {
     headers.append('Authorization', this._authorization);
-
+    //console.log(headers)
     const response = await fetch(
       `${this._endPoint}/${url}`,
       {method, body, headers},
     );
 
     try {
+      console.log(response);
       ApiService.checkStatus(response);
       return response;
     } catch (err) {

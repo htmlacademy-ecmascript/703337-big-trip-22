@@ -40,6 +40,7 @@ export default class PointPresenter {
 
     this.#pointComponent = new WaypointView({
       point: this.#point,
+      destinations: this.#destinations,
       onEditClick: this.#handleEditClickPresenter,
       onFavoriteClick: this.#handleFavoriteClick,
     });
@@ -57,15 +58,19 @@ export default class PointPresenter {
       render(this.#pointComponent, this.#pointListContainer);
       return;
     }
-    if (this.#pointListContainer.contains(prevPointComponent.element)) {
-      //alert('меняю местами новую точку и предыдущую точку');
+    //if (this.#pointListContainer.contains(prevPointComponent.element)) {
+
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
-      //alert('меняю местами новую форму и предыдущую форму');
-      this.#mode = Mode.EDITING;
-      replace(this.#pointEditComponent, prevPointEditComponent);
+    //if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
+
+    if (this.#mode === Mode.EDITING) {
+      //this.#mode = Mode.EDITING;
+      //replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
 
     }
 
@@ -82,6 +87,24 @@ export default class PointPresenter {
     if (this.#mode !== Mode.DEFAULT) {
     //alert(' метод resetView заменяю форму на карту')
       this.#replaceFormToCard();
+    }
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
     }
   }
 
@@ -119,7 +142,7 @@ export default class PointPresenter {
       UserAction.UPDATE_POINT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       point);
-    this.#replaceFormToCard();
+    //this.#replaceFormToCard();
   };
 
   #handleFormClose = () => {

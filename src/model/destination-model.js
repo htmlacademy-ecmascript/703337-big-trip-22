@@ -1,11 +1,19 @@
-export default class DestinationsModel {
-  #destinations = null;
+import Observable from '../framework/observable';
 
-  constructor(destinations){
-    this.#destinations = destinations;
+export default class DestinationsModel extends Observable {
+  #destinationsApiService = null;
+  #destinations = [];
+
+  constructor({destinationsApiService}){
+    super();
+    this.#destinationsApiService = destinationsApiService;
   }
 
   get destinations() {
     return this.#destinations;
+  }
+
+  async init(){
+    this.#destinations = [...await this.#destinationsApiService.destinations];
   }
 }

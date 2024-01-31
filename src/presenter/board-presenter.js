@@ -8,11 +8,18 @@ import NewPointPresenter from './new-point-presenter.js';
 import { filter } from '../utils/filter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { sortTypePrice, sortTypeTime } from '../utils/point.js';
+import LoadingView from '../view/loading-view.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class BoardPresenter {
   #tripListComponent = new TripEventListView();
   #boardContainer = null;
   #pointsModel = null;
+  #loadingComponent = new LoadingView();
   #filterModel = null;
   #destinationsModel = null;
   #offersModel = null;
@@ -25,6 +32,7 @@ export default class BoardPresenter {
   #newPointPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor({boardContainer, pointsModel, filterModel, destinationsModel, offersModel, onNewPointDestroy}) {
     this.#boardContainer = boardContainer;
@@ -46,6 +54,7 @@ export default class BoardPresenter {
   get points() {
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
+    //console.log(points)//адаптировано
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -58,13 +67,18 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#boardDestinations = this.#destinationsModel.destinations;//[...this.#destinationsModel.destinations];
-    this.#boardOffers = this.#offersModel.offers;//[...this.#offersModel.offers];
     this.#renderBoard();
-
   }
 
   #renderBoard() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+    this.#boardDestinations = this.#destinationsModel.destinations;
+    this.#boardOffers = this.#offersModel.offers;
+    console.log(this.#boardDestinations);
+    console.log(this.#boardOffers);
     const pointsArr = this.points;
     const pointCount = pointsArr.length;
     if (pointCount === 0) {
@@ -94,6 +108,10 @@ export default class BoardPresenter {
     render(this.#tripListComponent, this.#boardContainer);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #renderNoPoints() {
     this.#noPointComponent = new NoPointView({
       filterType: this.#filterType
@@ -111,25 +129,18 @@ export default class BoardPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  // #handlePointChange = (updatedPoint) => {
-  //   this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
-  //   this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
-  //   this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#boardDestinations, this.#boardOffers);
-  // };
-
   #handleViewAction = (actionType, updateType, update) => {
-    //console.log(actionType, updateType, update);
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
     switch (actionType) {
       case UserAction.UPDATE_POINT:
+        this.#pointPresenters.get(update.id).setSaving();
         this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
+        this.#newPointPresenter.setSaving();
         this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
+        this.#pointPresenters.get(update.id).setDeleting();
         this.#pointsModel.deletePoint(updateType, update);
         break;
     }
@@ -143,17 +154,19 @@ export default class BoardPresenter {
     // - обновить всю доску (например, при переключении фильтра)
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#pointPresenters.get(data.id).init(data, destinations, offers);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderBoard();
-        // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }
@@ -165,12 +178,12 @@ export default class BoardPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
     }
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
-
     }
   }
 
