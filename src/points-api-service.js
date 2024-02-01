@@ -14,8 +14,8 @@ export default class PointsApiService extends ApiService {
   }
 
   async updatePoint(point) {
-    console.log(point);
-    console.log(JSON.stringify(this.#adaptToServer(point)));
+    //console.log(point);
+    //console.log(JSON.stringify(this.#adaptToServer(point)));
     const response = await this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
@@ -29,8 +29,8 @@ export default class PointsApiService extends ApiService {
   }
 
   async addPoint(point) {
-    console.log(point);
-    console.log(JSON.stringify(this.#adaptToServer(point)));
+    //console.log(point);
+    //console.log(JSON.stringify(this.#adaptToServer(point)));
     const response = await this._load({
       url: 'points',
       method: Method.POST,

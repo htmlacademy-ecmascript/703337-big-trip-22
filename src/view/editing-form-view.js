@@ -1,12 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EventType } from '../const.js';
-//import he from 'he';
 import { humanizeEventEditDate } from '../utils/point.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 
 const BLANK_POINT = {
+  id: '',
   basePrice: 0,
   dateFrom: null,
   dateTo: null,
@@ -179,10 +179,10 @@ const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
     ${isSaving ? 'Saving...' : 'Save'}</button>
     ${isNewPoint ? '<button class="event__reset-btn" type="reset">Cancel</button>'
       : `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
-      ${isDeleting ? 'Deleting...' : 'Delete'}</button>
-      <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
-      <span class="visually-hidden">Open event</span>
-      </button>`
+        ${isDeleting ? 'Deleting...' : 'Delete'}</button>
+        <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
+        <span class="visually-hidden">Open event</span>
+        </button>`
     }
 
   </header>
@@ -232,23 +232,24 @@ export default class TripEventEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
     if(this.element.querySelector('.event__rollup-btn')){
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
     }
     this.element.querySelector('.event__type-list').addEventListener('click', this.#formTypeHandler);
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formDeleteClickHandler);
+
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestinationInputHandler);
     this.#setDatepicker();
 
     this.element.querySelector('.event__input--price').addEventListener('change', this.#formPriceInputHandler);
-    this.element.querySelector('.event__section--offers').addEventListener('change', this.#formOffersHandler);
+    //this.element.querySelector('.event__section--offers').addEventListener('change', this.#formOffersHandler);
   }
 
   static parsePointToState(point) {
     return {...point,
-      isNewPoint: true,
+      isNewPoint: false,
       isDisabled: false,
       isSaving: false,
       isDeleting: false,};
@@ -260,6 +261,7 @@ export default class TripEventEditView extends AbstractStatefulView {
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;
+    delete point.isNewPoint;
     return point;
   }
 
@@ -302,16 +304,16 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.#handleFormSubmit(TripEventEditView.parseStateToPoint(this._state));
   };
 
-  #formOffersHandler = (evt) => {
-    console.log(evt.target.checked);
-    let ggg = evt.target.checked;
-    console.log(!ggg);
-    evt.target.checked = ggg;
-    console.log(evt.target);
-    // this.updateElement({
-    //   offers:
-    // });
-  };
+  //#formOffersHandler = (evt) => {
+  //console.log(evt.target.checked);
+  //let ggg = evt.target.checked;
+  //console.log(!ggg);
+  //evt.target.checked = ggg;
+  //console.log(evt.target);
+  // this.updateElement({
+  //   offers:
+  // });
+  //};
 
   #formTypeHandler = (evt) => {
     evt.preventDefault();
