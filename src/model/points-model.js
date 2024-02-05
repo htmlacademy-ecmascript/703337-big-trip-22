@@ -16,13 +16,20 @@ export default class PointsModel extends Observable {
 
   async init() {
     try {
+      //alert('try init points-model')
       const points = await this.#pointsApiService.points;
       console.log(points); //не адаптировано для клиента
       this.#points = points.map(this.#adaptToClient);
     } catch(err) {
-      this.#points = [];
+      //this.#points = [];
+      //alert('HHHH')
+      this._notify(UpdateType.FAILED);
+      return;
+      //alert('JJJJ')
+      //throw new Error('Failed load points');
     }
     this._notify(UpdateType.INIT);
+    //alert('end init points-model')
   }
 
   async updatePoint(updateType, update) {
@@ -34,7 +41,7 @@ export default class PointsModel extends Observable {
 
     try{
       const response = await this.#pointsApiService.updatePoint(update);
-      console.log(response);
+      //console.log(response);
       const updatedPoint = this.#adaptToClient(response);
       this.#points = [
         ...this.#points.slice(0, index),

@@ -9,6 +9,7 @@ import { filter } from '../utils/filter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
 import { sortTypePrice, sortTypeTime } from '../utils/point.js';
 import LoadingView from '../view/loading-view.js';
+import FailedLoadView from '../view/failed-load-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 const TimeLimit = {
@@ -21,6 +22,7 @@ export default class BoardPresenter {
   #boardContainer = null;
   #pointsModel = null;
   #loadingComponent = new LoadingView();
+  #failedLoadComponent = new FailedLoadView();
   #filterModel = null;
   #destinationsModel = null;
   #offersModel = null;
@@ -34,6 +36,7 @@ export default class BoardPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #isFailedLoad = false;
 
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
@@ -55,6 +58,8 @@ export default class BoardPresenter {
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -73,10 +78,18 @@ export default class BoardPresenter {
   }
 
   init() {
+    // this.#boardDestinations = this.#destinationsModel.destinations;
+    // this.#boardOffers = this.#offersModel.offers;
+    // console.log(this.#boardDestinations);
+    // console.log(this.#boardOffers);
     this.#renderBoard();
   }
 
   #renderBoard() {
+    if(this.#isFailedLoad){
+      this.#renderFailedLoad();
+      return;
+    }
     if (this.#isLoading) {
       this.#renderLoading();
       return;
@@ -114,6 +127,10 @@ export default class BoardPresenter {
     render(this.#tripListComponent, this.#boardContainer);
   }
 
+  #renderFailedLoad(){
+    render(this.#failedLoadComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #renderLoading() {
     render(this.#loadingComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
@@ -149,7 +166,7 @@ export default class BoardPresenter {
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try{
-          this.#pointsModel.addPoint(updateType, update);
+          await this.#pointsModel.addPoint(updateType, update);
         }catch(err){
           this.#newPointPresenter.setAborting();
         }
@@ -157,7 +174,7 @@ export default class BoardPresenter {
       case UserAction.DELETE_POINT:
         this.#pointPresenters.get(update.id).setDeleting();
         try{
-          this.#pointsModel.deletePoint(updateType, update);
+          await this.#pointsModel.deletePoint(updateType, update);
         }catch(err){
           this.#pointPresenters.get(update.id).setAborting();
         }
@@ -182,8 +199,19 @@ export default class BoardPresenter {
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
+        this.#isFailedLoad = false;
+        remove(this.#loadingComponent);
+        remove(this.#failedLoadComponent);
+        this.#renderBoard();
+        //alert('end init')
+        break;
+      case UpdateType.FAILED:
+        this.#isFailedLoad = true;
+        this.#isLoading = false;
+        //alert('UpdateType.FAILED перед')
         remove(this.#loadingComponent);
         this.#renderBoard();
+        //alert('UpdateType.FAILED после ')
         break;
     }
   };
@@ -197,6 +225,9 @@ export default class BoardPresenter {
     remove(this.#loadingComponent);
     if (this.#noPointComponent) {
       remove(this.#noPointComponent);
+    }
+    if(this.#failedLoadComponent){
+      remove(this.#failedLoadComponent);
     }
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;

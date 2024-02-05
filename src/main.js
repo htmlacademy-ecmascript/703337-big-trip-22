@@ -1,10 +1,10 @@
 //import FilterView from './view/filter-view.js';
-import { mockDestinations } from './mock/destinationM.js';
-import { mockOffers } from './mock/offerM.js';
+//import { mockDestinations } from './mock/destinationM.js';
+//import { mockOffers } from './mock/offerM.js';
 import { render } from './framework/render.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import PointsModel from './model/point-model.js';
+import PointsModel from './model/points-model.js';
 import DestinationsModel from './model/destination-model.js';
 import OffersModel from './model/offer-model.js';
 //import { getRandomPoint } from './mock/pointM.js';

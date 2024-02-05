@@ -1,4 +1,5 @@
 import Observable from '../framework/observable';
+import { UpdateType } from '../const';
 
 export default class OffersModel extends Observable {
   #offersApiService = null;
@@ -14,6 +15,11 @@ export default class OffersModel extends Observable {
   }
 
   async init(){
-    this.#offers = [...await this.#offersApiService.offers];
+    try{
+      this.#offers = await this.#offersApiService.offers;
+    }catch(err){
+      this._notify(UpdateType.FAILED);
+    }
+
   }
 }

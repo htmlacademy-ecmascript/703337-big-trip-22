@@ -21,9 +21,9 @@ const getEditOffersTemplate = (offer, array) => {
   const{id, title, price} = offer;
   const isChecked = array.includes(id);
   const lastWord = title.split(' ');
-  //console.log(lastWord[lastWord.length - 1]);
+
   return `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${lastWord[lastWord.length - 1]}-1"
+  <input class="event__offer-checkbox  visually-hidden" data-id-offer = "${id}" id="event-offer-${lastWord[lastWord.length - 1]}-1"
   type="checkbox" name="event-offer-${lastWord[lastWord.length - 1]}" ${isChecked ? 'checked' : ''}>
   <label class="event__offer-label" for="event-offer-${lastWord[lastWord.length - 1]}-1">
     <span class="event__offer-title">${title}</span>
@@ -211,7 +211,6 @@ export default class TripEventEditView extends AbstractStatefulView {
   #handleFormClose = null;
   #handleDeleteClick = null;
 
-
   constructor({point = BLANK_POINT, destinations, offers, onFormSubmit, onFormClose, onDeleteClick}) {
     super();
     this.#point = point;
@@ -244,7 +243,7 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.#setDatepicker();
 
     this.element.querySelector('.event__input--price').addEventListener('change', this.#formPriceInputHandler);
-    //this.element.querySelector('.event__section--offers').addEventListener('change', this.#formOffersHandler);
+    this.element.querySelector('.event__section--offers').addEventListener('change', this.#formOffersHandler);
   }
 
   static parsePointToState(point) {
@@ -304,16 +303,18 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.#handleFormSubmit(TripEventEditView.parseStateToPoint(this._state));
   };
 
-  //#formOffersHandler = (evt) => {
-  //console.log(evt.target.checked);
-  //let ggg = evt.target.checked;
-  //console.log(!ggg);
-  //evt.target.checked = ggg;
-  //console.log(evt.target);
-  // this.updateElement({
-  //   offers:
-  // });
-  //};
+  #formOffersHandler = (evt) => {
+    let arrayOffer = [...this._state.offers];
+    if(evt.target.checked && !arrayOffer.includes(evt.target.dataset.idOffer)){
+      arrayOffer.push(evt.target.dataset.idOffer);
+    } else if(!evt.target.checked){
+      arrayOffer = arrayOffer.filter((offer) => offer !== evt.target.dataset.idOffer);
+    }
+
+    this.updateElement({
+      offers: [...arrayOffer],
+    });
+  };
 
   #formTypeHandler = (evt) => {
     evt.preventDefault();
@@ -339,8 +340,6 @@ export default class TripEventEditView extends AbstractStatefulView {
   };
 
   #dateFromChangeHandler = ([userDate]) => {
-    //console.log(dateObj)
-    //console.log(userDate)
     this.updateElement({
       dateFrom: userDate,
     });
