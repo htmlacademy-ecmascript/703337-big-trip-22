@@ -1,6 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EventType } from '../const.js';
-//import he from 'he';
 import { humanizeEventEditDate } from '../utils/point.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -15,15 +14,16 @@ const BLANK_POINT = {
   isFavorite: false,
   offers: [],
   type: EventType.FLIGHT,
+  isNewPoint: true,
 };
 
 const getEditOffersTemplate = (offer, array) => {
   const{id, title, price} = offer;
   const isChecked = array.includes(id);
   const lastWord = title.split(' ');
-  //console.log(lastWord[lastWord.length - 1]);
+
   return `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${lastWord[lastWord.length - 1]}-1"
+  <input class="event__offer-checkbox  visually-hidden" data-id-offer = "${id}" id="event-offer-${lastWord[lastWord.length - 1]}-1"
   type="checkbox" name="event-offer-${lastWord[lastWord.length - 1]}" ${isChecked ? 'checked' : ''}>
   <label class="event__offer-label" for="event-offer-${lastWord[lastWord.length - 1]}-1">
     <span class="event__offer-title">${title}</span>
@@ -60,7 +60,7 @@ const createDestEventEditTemplate = (destination) => {
   if(destination){
     const{description, pictures} = destination;
     return `<section class="event__section  event__section--destination">
-  <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+  <h3 class="event__section-title  event__section-title--destination">${description ? 'Destination' : ''}</h3>
   <p class="event__destination-description">${description}</p>
   <div class="event__photos-container">
     <div class="event__photos-tape">
@@ -75,13 +75,15 @@ const createDestEventEditTemplate = (destination) => {
 };
 
 const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
-  const {type, dateFrom, dateTo, basePrice, destination, offers: arrOffers} = event;
+  const {type, dateFrom, dateTo, basePrice, destination, offers: arrOffers, isNewPoint, isDisabled,
+    isSaving, isDeleting,} = event;
+    //console.log(event)
   const dateF = humanizeEventEditDate(dateFrom);
   const dateT = humanizeEventEditDate(dateTo);
   const typeOffers = offersArray.find((offer) => offer.type === type).offers;
   const offersAll = createOffersEventEditTemplate(typeOffers, arrOffers);
-
-  const destinationObj = destinationsArray.find((item) => destination === item.name);
+  const destinationObj = destinationsArray.find((item) => destination === item.id);
+  const destinationName = destinationObj ? destinationObj.name : '';
   const description = createDestEventEditTemplate(destinationObj);
   const options = destinationsArray.map((opt) => getEditOptionsTemplate(opt.name)).join('');
 
@@ -151,7 +153,7 @@ const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${options}
       </datalist>
@@ -173,11 +175,16 @@ const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
       <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
-      <span class="visually-hidden">Open event</span>
-    </button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+    ${isSaving ? 'Saving...' : 'Save'}</button>
+    ${isNewPoint ? '<button class="event__reset-btn" type="reset">Cancel</button>'
+      : `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+        ${isDeleting ? 'Deleting...' : 'Delete'}</button>
+        <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
+        <span class="visually-hidden">Open event</span>
+        </button>`
+    }
+
   </header>
   <section class="event__details">
     <section class="event__section  event__section--offers">
@@ -204,14 +211,13 @@ export default class TripEventEditView extends AbstractStatefulView {
   #handleFormClose = null;
   #handleDeleteClick = null;
 
-
   constructor({point = BLANK_POINT, destinations, offers, onFormSubmit, onFormClose, onDeleteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
 
-    this._setState(TripEventEditView.parsePointToState(point));//объект состояния
+    this._setState(TripEventEditView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormClose = onFormClose;
     this.#handleDeleteClick = onDeleteClick;
@@ -225,24 +231,36 @@ export default class TripEventEditView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
+    if(this.element.querySelector('.event__rollup-btn')){
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+    }
     this.element.querySelector('.event__type-list').addEventListener('click', this.#formTypeHandler);
 
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#formDestinationInputHandler);
-    //this.element.querySelector('.event__field-group--time').addEventListener('click', this.#setDatepicker);
     this.#setDatepicker();
-    this.element.querySelector('.event__reset-btn')
-      .addEventListener('click', this.#formDeleteClickHandler);
+
     this.element.querySelector('.event__input--price').addEventListener('change', this.#formPriceInputHandler);
+    this.element.querySelector('.event__section--offers').addEventListener('change', this.#formOffersHandler);
   }
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isNewPoint: false,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,};
+
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
+    delete point.isNewPoint;
     return point;
   }
 
@@ -285,6 +303,19 @@ export default class TripEventEditView extends AbstractStatefulView {
     this.#handleFormSubmit(TripEventEditView.parseStateToPoint(this._state));
   };
 
+  #formOffersHandler = (evt) => {
+    let arrayOffer = [...this._state.offers];
+    if(evt.target.checked && !arrayOffer.includes(evt.target.dataset.idOffer)){
+      arrayOffer.push(evt.target.dataset.idOffer);
+    } else if(!evt.target.checked){
+      arrayOffer = arrayOffer.filter((offer) => offer !== evt.target.dataset.idOffer);
+    }
+
+    this.updateElement({
+      offers: [...arrayOffer],
+    });
+  };
+
   #formTypeHandler = (evt) => {
     evt.preventDefault();
     const type = evt.target.closest('div').firstElementChild;
@@ -302,14 +333,13 @@ export default class TripEventEditView extends AbstractStatefulView {
 
   #formDestinationInputHandler = (evt) => {
     evt.preventDefault();
+    const destinationId = this.#destinations.find((item) => evt.target.value === item.name).id;
     this.updateElement({
-      destination: evt.target.value,
+      destination: destinationId,
     });
   };
 
   #dateFromChangeHandler = ([userDate]) => {
-    //console.log(dateObj)
-    //console.log(userDate)
     this.updateElement({
       dateFrom: userDate,
     });
@@ -328,9 +358,8 @@ export default class TripEventEditView extends AbstractStatefulView {
 
   #formPriceInputHandler = (evt) => {
     evt.preventDefault();
-    //evt.target.blur();
     this.updateElement({
-      basePrice: evt.target.value.replace(/[^0-9]/g, ''),
+      basePrice: Number(evt.target.value.replace(/[^0-9]/g, '')) ,
     });
   };
 }
