@@ -19,10 +19,10 @@ export default class DestinationsModel extends Observable {
 
       const destinations = await this.#destinationsApiService.destinations;
       this.#destinations = destinations;
-
+      console.log(destinations)
     } catch(err){
       this._notify(UpdateType.FAILED);
     }
-
+    //this._notify(UpdateType.INIT);
   }
 }

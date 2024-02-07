@@ -5,9 +5,10 @@ import NoPointView from '../view/no-point-view.js';
 import { RenderPosition } from '../framework/render.js';
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
+
 import { filter } from '../utils/filter.js';
 import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
-import { sortTypePrice, sortTypeTime } from '../utils/point.js';
+import { sortTypeDay, sortTypePrice, sortTypeTime } from '../utils/point.js';
 import LoadingView from '../view/loading-view.js';
 import FailedLoadView from '../view/failed-load-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
@@ -27,12 +28,13 @@ export default class BoardPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
-  #boardDestinations = [];
-  #boardOffers = [];
+  #boardDestinations = null;
+  #boardOffers = null;
   #sortComponent = null;
   #noPointComponent = null;
   #pointPresenters = new Map();
   #newPointPresenter = null;
+  #newPointButtonComponent = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
@@ -69,6 +71,8 @@ export default class BoardPresenter {
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
+      case SortType.DEFAULT:
+        return filteredPoints.sort(sortTypeDay);
       case SortType.TIME:
         return filteredPoints.sort(sortTypeTime);
       case SortType.PRICE:
@@ -92,21 +96,29 @@ export default class BoardPresenter {
     }
     this.#boardDestinations = this.#destinationsModel.destinations;
     this.#boardOffers = this.#offersModel.offers;
-
-    const pointsArr = this.points;
+    const pointsArr = [];//this.points;
     const pointCount = pointsArr.length;
-    if (pointCount === 0) {
-      this.#renderNoPoints();
-      return;
+    try{
+      if (pointCount === 0) {
+        this.#renderNoPoints();
+        return;
+      }
+      this.#renderSort();
+
+      this.#renderTripList();
+      if(this.#boardDestinations && this.#boardOffers){
+        pointsArr.forEach((item) => this.#renderPoint(item, this.#boardDestinations, this.#boardOffers));
+      }
+    } catch(err){
+      console.error(err);
     }
-    this.#renderSort();
-    this.#renderTripList();
-    pointsArr.forEach((item) => this.#renderPoint(item, this.#boardDestinations, this.#boardOffers));
   }
 
   createPoint() {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    remove(this.#noPointComponent);
+    this.#renderTripList();
     this.#newPointPresenter.init(this.#boardDestinations, this.#boardOffers);
   }
 

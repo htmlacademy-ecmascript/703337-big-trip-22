@@ -4,7 +4,6 @@ import { humanizeEventEditDate } from '../utils/point.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-
 const BLANK_POINT = {
   basePrice: 0,
   dateFrom: null,
@@ -76,7 +75,7 @@ const createDestEventEditTemplate = (destination) => {
 const createTripEventEditTemplate = (event, destinationsArray, offersArray) => {
   const {type, dateFrom, dateTo, basePrice, destination, offers: arrOffers, isNewPoint, isDisabled,
     isSaving, isDeleting,} = event;
-    //console.log(event)
+
   const dateF = humanizeEventEditDate(dateFrom);
   const dateT = humanizeEventEditDate(dateTo);
   const typeOffers = offersArray.find((offer) => offer.type === type).offers;
