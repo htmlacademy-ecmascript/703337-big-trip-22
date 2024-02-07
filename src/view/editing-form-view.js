@@ -6,7 +6,6 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 
 const BLANK_POINT = {
-  id: '',
   basePrice: 0,
   dateFrom: null,
   dateTo: null,
