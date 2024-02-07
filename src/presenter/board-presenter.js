@@ -65,7 +65,7 @@ export default class BoardPresenter {
   get points() {
     this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
-    //console.log(points)//адаптировано
+
     const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
@@ -78,10 +78,6 @@ export default class BoardPresenter {
   }
 
   init() {
-    // this.#boardDestinations = this.#destinationsModel.destinations;
-    // this.#boardOffers = this.#offersModel.offers;
-    // console.log(this.#boardDestinations);
-    // console.log(this.#boardOffers);
     this.#renderBoard();
   }
 
@@ -96,8 +92,7 @@ export default class BoardPresenter {
     }
     this.#boardDestinations = this.#destinationsModel.destinations;
     this.#boardOffers = this.#offersModel.offers;
-    //console.log(this.#boardDestinations);
-    //console.log(this.#boardOffers);
+
     const pointsArr = this.points;
     const pointCount = pointsArr.length;
     if (pointCount === 0) {
@@ -203,15 +198,12 @@ export default class BoardPresenter {
         remove(this.#loadingComponent);
         remove(this.#failedLoadComponent);
         this.#renderBoard();
-        //alert('end init')
         break;
       case UpdateType.FAILED:
         this.#isFailedLoad = true;
         this.#isLoading = false;
-        //alert('UpdateType.FAILED перед')
         remove(this.#loadingComponent);
         this.#renderBoard();
-        //alert('UpdateType.FAILED после ')
         break;
     }
   };
