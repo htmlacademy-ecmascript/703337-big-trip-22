@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDueDate, duration } from '../utils/point.js';
-import { mockOffers } from '../mock/offerM.js';
+//import { mockOffers } from '../mock/offerM.js';
 import dayjs from 'dayjs';
 
 
@@ -31,11 +31,11 @@ function createEventOffersTemplate (offers) {
     </ul>`);
 }
 
-function createWaypointTemplate(event, destinations) {
-  //console.log(destinations)
+function createWaypointTemplate(event, destinations, offerArray) {
+
   const {type, dateFrom, dateTo, destination, basePrice, isFavorite, offers: arrOffers} = event;
   const destinationName = destinations.find((item) => destination === item.id).name;
-  //console.log(destinationName)
+  //console.log(offerArray);
   const date = humanizeEventDueDate(dateFrom);
   const durationTime = () => {
     const separatedTime = duration(dateFrom, dateTo);
@@ -45,7 +45,7 @@ function createWaypointTemplate(event, destinations) {
   const timeFrom = dayjs(dateFrom).format('HH:mm');
   const timeTo = dayjs(dateTo).format('HH:mm');
 
-  const typeOffers = mockOffers.find((offer) => offer.type === type).offers;
+  const typeOffers = offerArray.find((offer) => offer.type === type).offers;
 
   const pointOffers = typeOffers.filter((off) => arrOffers.includes(off.id));
 
@@ -86,14 +86,16 @@ function createWaypointTemplate(event, destinations) {
 
 export default class WaypointView extends AbstractView {
   #point = null;
-  #destinations;
+  #destinations = null;
+  #offers = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({point, destinations, onEditClick, onFavoriteClick}) {
+  constructor({point, destinations, offers, onEditClick, onFavoriteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
+    this.#offers = offers;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -104,7 +106,7 @@ export default class WaypointView extends AbstractView {
   }
 
   get template() {
-    return createWaypointTemplate(this.#point, this.#destinations);
+    return createWaypointTemplate(this.#point, this.#destinations, this.#offers);
   }
 
   #editClickHandler = (evt) => {

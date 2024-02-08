@@ -28,6 +28,9 @@ function duration(dateFrom, dateTo){
   };
 }
 
+const sortTypeDay = (a, b) => {
+  return dayjs(b.dateTo) - dayjs(a.dateTo);
+};
 const sortTypePrice = (a, b) => b.basePrice - a.basePrice;
 
 
@@ -59,5 +62,5 @@ const isDatesPresent = (point) => {
   }
 };
 
-export {humanizeEventDueDate, humanizeEventEditDate, sortTypeTime, duration, sortTypePrice, isDatesFuture,
+export {humanizeEventDueDate, humanizeEventEditDate, sortTypeTime, sortTypeDay, duration, sortTypePrice, isDatesFuture,
   isDatesPast, isDatesPresent};

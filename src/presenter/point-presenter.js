@@ -41,6 +41,7 @@ export default class PointPresenter {
     this.#pointComponent = new WaypointView({
       point: this.#point,
       destinations: this.#destinations,
+      offers: this.#offers,
       onEditClick: this.#handleEditClickPresenter,
       onFavoriteClick: this.#handleFavoriteClick,
     });
