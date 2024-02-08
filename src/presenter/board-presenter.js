@@ -96,7 +96,7 @@ export default class BoardPresenter {
     }
     this.#boardDestinations = this.#destinationsModel.destinations;
     this.#boardOffers = this.#offersModel.offers;
-    const pointsArr = [];//this.points;
+    const pointsArr = this.points;
     const pointCount = pointsArr.length;
     try{
       if (pointCount === 0) {

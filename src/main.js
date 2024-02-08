@@ -60,17 +60,14 @@ function handleNewPointButtonClick() {
 }
 
 render(newPointButtonComponent, tripMainElement);
-
-destinationsModel.init();
-
-offersModel.init();
+filterPresenter.init();
 boardPresenter.init();
-pointsModel.init()
+
+destinationsModel.init()
+  .then(() => offersModel.init())
+  .then(() => pointsModel.init())
   .finally(() => {
     render(newPointButtonComponent, tripMainElement);
   });
 
-filterPresenter.init();
-
-export{handleNewPointButtonClick};
 
