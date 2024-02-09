@@ -205,6 +205,7 @@ export default class TripEventEditView extends AbstractStatefulView {
   #offers = null;
   #handleFormSubmit = null;
   #datepickerFrom = null;
+
   #datepickerTo = null;
   #handleFormClose = null;
   #handleDeleteClick = null;
@@ -309,7 +310,7 @@ export default class TripEventEditView extends AbstractStatefulView {
       arrayOffer = arrayOffer.filter((offer) => offer !== evt.target.dataset.idOffer);
     }
 
-    this.updateElement({
+    this._setState({
       offers: [...arrayOffer],
     });
   };
